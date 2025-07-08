@@ -66,14 +66,25 @@ namespace StudentRegistrationSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,FullName,Email,RegistrationDate")] Student student)
         {
+            // Check if FullName or Email already exists
+            bool isDuplicate = await _context.Students.AnyAsync(s => s.Email == student.Email);
+
+            if (isDuplicate)
+            {
+                ModelState.AddModelError("", "A student with this email already exists.");
+                return View(student);
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(student);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(student);
         }
+
 
         // GET: Students/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -103,6 +114,16 @@ namespace StudentRegistrationSystem.Controllers
                 return NotFound();
             }
 
+            // Check for duplicates (excluding the student being edited)
+            var duplicate = await _context.Students
+        .AnyAsync(s => s.Email == student.Email && s.Id != student.Id);
+
+            if (duplicate)
+            {
+                ModelState.AddModelError("Email", "Another student is already using this email.");
+                return View(student);
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -113,18 +134,17 @@ namespace StudentRegistrationSystem.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!StudentExists(student.Id))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(student);
         }
+
+
 
         // GET: Students/Delete/5
         public async Task<IActionResult> Delete(int? id)
