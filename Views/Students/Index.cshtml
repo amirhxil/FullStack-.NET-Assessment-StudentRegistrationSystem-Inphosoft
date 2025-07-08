@@ -1,0 +1,97 @@
+﻿@model IEnumerable<StudentRegistrationSystem.Models.Student>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<form asp-controller="Students" asp-action="Index" method="get" style="position: relative; width: 300px;">
+    <input id="searchBox" class="form-control" type="text" name="searchString"
+           value="@Context.Request.Query["searchString"]"
+           placeholder="Search by name" autocomplete="off" />
+
+    <button class="btn btn-primary" type="submit">Search</button>
+    <a href="@Url.Action("Index", "Students")" class="btn btn-secondary">Reset</a>
+
+    <ul id="suggestions" style="position: absolute; z-index: 999; background: white; border: 1px solid #ccc; list-style: none; padding: 0; margin-top: 2px; width: 100%; display: none;"></ul>
+</form>
+
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegistrationDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RegistrationDate)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+@section Scripts {
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#searchBox').on('input', function () {
+                var query = $(this).val();
+                if (query.length >= 1) {
+                    $.get('/api/StudentsApi/search?q=' + query, function (data) {
+                        var suggestionList = '';
+                        data.forEach(function (item) {
+                            suggestionList += `<li class="suggest-item" style="padding: 5px; cursor: pointer;">${item}</li>`;
+                        });
+                        $('#suggestions').html(suggestionList).show();
+                    });
+                } else {
+                    $('#suggestions').hide();
+                }
+            });
+
+            $(document).on('click', '.suggest-item', function () {
+                $('#searchBox').val($(this).text());
+                $('#suggestions').hide();
+            });
+
+            $(document).click(function (e) {
+                if (!$(e.target).closest('#searchBox, #suggestions').length) {
+                    $('#suggestions').hide();
+                }
+            });
+        });
+    </script>
+}
