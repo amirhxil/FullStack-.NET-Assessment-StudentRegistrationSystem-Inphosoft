@@ -1,68 +1,61 @@
 ﻿@model IEnumerable<StudentRegistrationSystem.Models.Student>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Student List";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary">Student Registration System</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<form asp-controller="Students" asp-action="Index" method="get" style="position: relative; width: 300px;">
-    <input id="searchBox" class="form-control" type="text" name="searchString"
-           value="@Context.Request.Query["searchString"]"
-           placeholder="Search by name" autocomplete="off" />
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <form asp-controller="Students" asp-action="Index" method="get" class="d-flex position-relative" style="width: 300px;">
+                <input id="searchBox" class="form-control me-2" type="text" name="searchString"
+                       value="@Context.Request.Query["searchString"]"
+                       placeholder="Search by name" autocomplete="off" />
 
-    <button class="btn btn-primary" type="submit">Search</button>
-    <a href="@Url.Action("Index", "Students")" class="btn btn-secondary">Reset</a>
+                <button class="btn btn-primary me-2" type="submit">Search</button>
+                <a href="@Url.Action("Index", "Students")" class="btn btn-secondary">Reset</a>
 
-    <ul id="suggestions" style="position: absolute; z-index: 999; background: white; border: 1px solid #ccc; list-style: none; padding: 0; margin-top: 2px; width: 100%; display: none;"></ul>
-</form>
+                <ul id="suggestions" class="list-group position-absolute w-100"
+                    style="z-index: 999; top: 100%; margin-top: 4px; display: none;"></ul>
+            </form>
+        </div>
 
+        <div class="col-md-4 text-end">
+            <a asp-action="Create" class="btn btn-success">+ Register New Student</a>
+        </div>
+    </div>
 
-
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RegistrationDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RegistrationDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.First().FullName)</th>
+                <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+                <th>@Html.DisplayNameFor(model => model.First().RegistrationDate)</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.FullName</td>
+                    <td>@item.Email</td>
+                    <td>@item.RegistrationDate.ToString("yyyy-MM-dd")</td>
+                    <td class="text-center">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 
 @section Scripts {
-    <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
@@ -73,7 +66,7 @@
                     $.get('/api/StudentsApi/search?q=' + query, function (data) {
                         var suggestionList = '';
                         data.forEach(function (item) {
-                            suggestionList += `<li class="suggest-item" style="padding: 5px; cursor: pointer;">${item}</li>`;
+                            suggestionList += `<li class="list-group-item list-group-item-action suggest-item">${item}</li>`;
                         });
                         $('#suggestions').html(suggestionList).show();
                     });
