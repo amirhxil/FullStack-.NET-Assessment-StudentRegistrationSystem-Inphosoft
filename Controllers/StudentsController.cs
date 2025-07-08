@@ -56,7 +56,11 @@ namespace StudentRegistrationSystem.Controllers
         // GET: Students/Create
         public IActionResult Create()
         {
-            return View();
+            var student = new Student
+            {
+                RegistrationDate = DateTime.Now
+            };
+            return View(student);
         }
 
         // POST: Students/Create

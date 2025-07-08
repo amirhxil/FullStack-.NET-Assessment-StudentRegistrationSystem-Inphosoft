@@ -27,9 +27,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="RegistrationDate" class="control-label"></label>
-                <input asp-for="RegistrationDate" class="form-control" />
+                <input asp-for="RegistrationDate" class="form-control"
+                       value="@Model.RegistrationDate.ToString("yyyy-MM-ddTHH:mm")"
+                       type="datetime-local" />
                 <span asp-validation-for="RegistrationDate" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
