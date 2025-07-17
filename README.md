@@ -41,4 +41,4 @@ NuGet Package Manager – used for managing dependencies like EF Core.
 🔹 Version Control & Hosting
 Git – for source control and tracking code changes.
 
-GitHub – to store your source code online and share with others.
+GitHub – to store the source code online and share with others.
